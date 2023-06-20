@@ -181,6 +181,7 @@ async function consturctServer(moduleDefs) {
    * Serving static files
    */
   app.use(express.static(path.join(__dirname, 'public')))
+  app.use(express.static(path.join(__dirname, 'download')))
 
   /**
    * Cache
