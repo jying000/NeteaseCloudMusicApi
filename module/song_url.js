@@ -1,23 +1,27 @@
 // 歌曲链接
 
-const crypto = require('crypto')
 const path = require('path')
 const fs = require('fs')
 
 module.exports = (query, request) => {
   // console.log(query);
   // 先检索是否有本地目录记录
-  const txtpath = path.join(__dirname, '..', 'download', '本地目录.txt')
+  const txtpath = path.join(__dirname, '..', 'download', 'download.json')
+
   if (query.artist != null && fs.existsSync(txtpath)) {
-    let txt = fs.readFileSync(txtpath)
-    // console.log(txt.toString());
+    const txt = fs.readFileSync(txtpath, 'utf-8')
     try {
-      let musicList = JSON.parse('[' + txt.toString() + '{}]')
-      console.log(musicList)
+      let jsonStr = `[` + txt + `{}]`
+      let musicList = JSON.parse(jsonStr)
+      // console.log(musicList)
       if (musicList != null && musicList.length > 0) {
         let music = musicList.find((item) => {
-          return item.artist == query.artist && item.name == query.name
+          return (
+            item.artist == query.artist &&
+            item.name == query.name.replace(/[\\\/:\*\?"<>\|]/g, ' ')
+          )
         })
+        // console.log(music);
         if (music != null) {
           music.url =
             'files/' +
@@ -25,7 +29,7 @@ module.exports = (query, request) => {
             '/' +
             music.artist +
             ' - ' +
-            music.name +
+            music.name.replace(/[\\\/:\*\?"<>\|]/g, ' ') +
             '.mp3'
           music.local = true
           return {
@@ -38,11 +42,11 @@ module.exports = (query, request) => {
         }
       }
     } catch (err) {
-      console.error(err)
+      console.error('出错啦：' + err)
     }
   }
 
-  console.log('从网络获取歌曲地址')
+  // console.log('从网络获取歌曲地址')
   // if (!('MUSIC_U' in query.cookie))
   //   query.cookie._ntes_nuid = crypto.randomBytes(16).toString('hex')
   query.cookie.os = 'pc'
