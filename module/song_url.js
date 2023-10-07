@@ -46,6 +46,17 @@ module.exports = (query, request) => {
     }
   }
 
+  // 如果是migu，则直接返回
+  if (query != null && query.resource == 'migu') {
+    return {
+      status: 200,
+      body: {
+        code: 200,
+        data: [query],
+      },
+    }
+  }
+
   // console.log('从网络获取歌曲地址')
   // if (!('MUSIC_U' in query.cookie))
   //   query.cookie._ntes_nuid = crypto.randomBytes(16).toString('hex')

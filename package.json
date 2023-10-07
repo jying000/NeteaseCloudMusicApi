@@ -45,8 +45,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ]
   },
   "author": "binaryify",
@@ -64,6 +63,7 @@
   ],
   "dependencies": {
     "axios": "^1.2.2",
+    "cheerio": "^1.0.0-rc.12",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.9",
     "md5": "^2.3.0",

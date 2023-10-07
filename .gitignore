@@ -7,3 +7,5 @@ node_modules
 examples/moddef.json
 bin
 /download
+/yarn.lock
+/package-lock.json

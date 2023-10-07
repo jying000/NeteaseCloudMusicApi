@@ -71,6 +71,7 @@ module.exports = async (query) => {
         query.cookie = undefined
         query.src = undefined
         query.index = undefined
+        query.lyric = undefined
         if (!fs.existsSync(dir)) {
           fs.writeFileSync(dir, JSON.stringify(query) + ',\n')
         } else {

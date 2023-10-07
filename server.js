@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const request = require('./util/request')
+const request_migu = require('./util/request_migu')
 const packageJSON = require('./package.json')
 const exec = require('child_process').exec
 const cache = require('./util/apicache').middleware
@@ -223,6 +224,7 @@ async function consturctServer(moduleDefs) {
 
       try {
         const moduleResponse = await moduleDef.module(query, (...params) => {
+          // 只有路由内部调用request_callback才会走这里
           // 参数注入客户端IP
           const obj = [...params]
           let ip = req.ip
@@ -235,7 +237,20 @@ async function consturctServer(moduleDefs) {
             ...obj[3],
             ip,
           }
-          return request(...obj)
+          // console.log("地址：", params);
+          let data = params[0].data
+          if (
+            (data != null &&
+              data.resource != null &&
+              data.resource == 'migu') ||
+            (params[1] != null && params[1].resource == 'migu')
+          ) {
+            console.log('我去migu了')
+            return request_migu(...obj)
+          } else {
+            // console.log("我去netease了");
+            return request(...obj)
+          }
         })
         console.log('[OK]', decode(req.originalUrl))
 

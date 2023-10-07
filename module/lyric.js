@@ -1,6 +1,42 @@
 // 歌词
 
-module.exports = (query, request) => {
+module.exports = async (query, request) => {
+  if (query.resource != null && query.resource == 'migu') {
+    const { cid } = query
+
+    if (!cid) {
+      return {
+        status: 500,
+        body: 'cid呢小老弟',
+      }
+    }
+
+    const result = await request(
+      `http://music.migu.cn/v3/api/music/audioPlayer/getLyric?copyrightId=${cid}`,
+      { resource: 'migu' },
+    )
+
+    if (result.msg === '成功') {
+      return {
+        status: 200,
+        body: {
+          code: 200,
+          lrc: { lyric: result.lyric },
+        },
+      }
+    }
+
+    return {
+      status: 200,
+      body: {
+        code: 200,
+        lrc: {
+          lyric: '[00:00.00]未获取到歌词 或 接口报错',
+        },
+      },
+    }
+  }
+
   query.cookie.os = 'ios'
 
   const data = {
