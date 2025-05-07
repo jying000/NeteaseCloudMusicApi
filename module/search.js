@@ -149,7 +149,7 @@ const search_migu = async (query, request_callback) => {
   switch (query.type) {
     case '1006':
     case '1': // 单曲列表
-      console.log('我是pgt=', result.pgt)
+      console.log('我是单曲总数pgt=', result.pgt)
       data = result.musics || []
       data = await getSongList(
         keywords,

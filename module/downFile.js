@@ -8,6 +8,15 @@ const fs = require('fs')
 
 module.exports = async (query) => {
   const url = query.url
+  if (url.indexOf('files/') > -1 || query.local == true) {
+    return {
+      status: 500,
+      body: {
+        code: 500,
+        data: '已是本地文件',
+      },
+    }
+  }
   const artist = query.artist
   const fileName =
     query.artist + ' - ' + query.name.replace(/[\\\/:\*\?"<>\|]/g, ' ') + '.mp3'
@@ -15,9 +24,9 @@ module.exports = async (query) => {
   if (dir == null || dir.trim().length == 0) {
     dir = path.join(__dirname, '..', 'download', artist)
   }
-  // console.log('------------------------------------------------')
+  console.log('------------------------------------------------')
   // console.log(query);
-  // console.log(url)
+  console.log(url)
   // console.log(artist);
   // console.log(fileName)
   // console.log(dir);
@@ -34,7 +43,13 @@ module.exports = async (query) => {
     const req = await protocol.get(url, (res) => {
       if (res.statusCode !== 200) {
         console.error(`下载失败：状态码 ${res.statusCode}`)
-        return
+        return {
+          status: 500,
+          body: {
+            code: 500,
+            data: '下载存储失败，状态码不是200，而是：' + res.statusCode,
+          },
+        }
       }
 
       // 创建可写流，写入文件
@@ -80,17 +95,17 @@ module.exports = async (query) => {
       })
     })
 
-    // // 监听请求的 error 事件
-    // req.on('error', (err) => {
-    //   console.error(`下载失败：${err.message}`)
-    //   return {
-    //     status: 500,
-    //     body: {
-    //       code: 500,
-    //       data: '下载失败',
-    //     },
-    //   }
-    // })
+    // 监听请求的 error 事件
+    req.on('error', (err) => {
+      console.error(`下载失败：${err.message}`)
+      return {
+        status: 500,
+        body: {
+          code: 500,
+          data: '下载失败',
+        },
+      }
+    })
 
     return {
       status: 200,
